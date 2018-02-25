@@ -3,7 +3,7 @@
 const StateMachine = require('../../index');
 
 const circuitBreaker = function (deferred) {
-    const cb = new StateMachine();
+    const cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
 
     return {
         run: async function (...args) {
@@ -26,13 +26,34 @@ const circuitBreaker = function (deferred) {
     }
 };
 
+let failCounter = 0;
+
 const breaker = circuitBreaker(async function () {
+    if (failCounter < 1) {
+        ++failCounter;
+        throw new Error('failed.');
+    }
     return 'hello world';
 });
 
-breaker.run().then((result) => {
-    console.log(result);
-}).catch((error) => {
-    console.log(error);
-});
+const timer = function (t) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(), t);
+    });
+};
 
+const run = async function () {
+    for (let i = 0; i < 4; i++) {
+        try {
+            if (i === 3) {
+                await timer(150);
+            }
+            console.log(await breaker.run());
+        }
+        catch (error) {
+            console.log(error.message);
+        }
+    }
+};
+
+run().then(() => console.log('done.')).catch((e) => console.log(e));
