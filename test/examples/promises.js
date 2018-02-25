@@ -15,11 +15,11 @@ const circuitBreaker = function (deferred) {
 
             try {
                 const result = await deferred(...args);
-                cb.success();
+                cb.succeed();
                 return result;
             }
             catch (error) {
-                cb.failure();
+                cb.fail();
                 throw error;
             }
         }

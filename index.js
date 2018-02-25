@@ -6,14 +6,14 @@ const OPEN = Symbol('open');
 const CLOSED = Symbol('closed');
 const HALF_OPEN = Symbol('half_open');
 
-const FAILURE = Symbol('failure');
-const SUCCESS = Symbol('success');
+const FAILURE = Symbol('fail');
+const SUCCESS = Symbol('succeed');
 
 
-class CircuitBreakerOpenException extends Error {
+class CircuitBreakerOpenError extends Error {
     constructor() {
         super('Circuit breaker is open');
-        this.name = 'CircuitBreakerOpenException';
+        this.name = 'CircuitBreakerOpenError';
         this.code = 'EPERM';
     }
 }
@@ -104,7 +104,7 @@ class StateMachine extends EventEmitter {
         this.emit(CLOSED);
     }
 
-    failure() {
+    fail() {
         ++this._failures;
         if (this.isHalfOpen()) {
             this._open();
@@ -116,7 +116,7 @@ class StateMachine extends EventEmitter {
         this.emit(FAILURE);
     }
 
-    success() {
+    succeed() {
         this._failures = 0;
         if (this.isHalfOpen()) {
             this._close();
@@ -132,9 +132,13 @@ class StateMachine extends EventEmitter {
         return this._state === HALF_OPEN;
     }
 
+    isClosed() {
+        return this._state == CLOSED;
+    }
+
     test() {
         if (this.isOpen()) {
-            return new CircuitBreakerOpenException();
+            return new CircuitBreakerOpenError();
         }
     }
 }

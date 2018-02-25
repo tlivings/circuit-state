@@ -4,11 +4,13 @@ const Test = require('tape');
 const StateMachine = require('../index');
 
 Test('initial state', (t) => {
-    t.plan(8);
+    t.plan(10);
 
     const cb = new StateMachine();
 
-    t.ok(!(cb.isHalfOpen() || cb.isOpen()), 'starts closed.');
+    t.ok(cb.isClosed(), 'starts closed.');
+    t.ok(!cb.isOpen(), 'not open.');
+    t.ok(!cb.isHalfOpen(), 'not half open.');
     t.equal(cb._failures,0, 'no failures.');
     t.ok(cb._stats, 'stats exists.');
     t.equal(cb.maxFailures,3, 'maxFailures 3.');
@@ -51,7 +53,7 @@ Test('failure', (t) => {
 
     const cb = new StateMachine();
 
-    cb.failure();
+    cb.fail();
 
     const stats = cb.stats.snapshot();
 
@@ -66,7 +68,7 @@ Test('success', (t) => {
 
     const cb = new StateMachine();
 
-    cb.success();
+    cb.succeed();
 
     const stats = cb.stats.snapshot();
 
@@ -81,7 +83,7 @@ Test('flip open', (t) => {
 
     const cb = new StateMachine({ maxFailures: 1 });
 
-    cb.failure();
+    cb.fail();
 
     t.ok(cb.isOpen(), 'is open.');
     t.equal(cb._failures, 0, 'current failures count reset.');
@@ -92,7 +94,7 @@ Test('half open', (t) => {
 
     const cb = new StateMachine({ maxFailures: 1, resetTimeout: 10 });
 
-    cb.failure();
+    cb.fail();
 
     t.ok(cb.isOpen(), 'is open.');
 
@@ -105,14 +107,14 @@ Test('half open to open', (t) => {
     t.plan(3);
     const cb = new StateMachine({ maxFailures: 2, resetTimeout: 10 });
 
-    cb.failure();
-    cb.failure();
+    cb.fail();
+    cb.fail();
 
     t.ok(cb.isOpen(), 'is open.');
 
     setTimeout(() => {    
         t.ok(cb.isHalfOpen(), 'half open now.');
-        cb.failure();
+        cb.fail();
         t.ok(cb.isOpen(), 'is open again.');
     }, 15);
 });
@@ -121,13 +123,13 @@ Test('half open to closed', (t) => {
     t.plan(4);
     const cb = new StateMachine({ maxFailures: 1, resetTimeout: 10 });
 
-    cb.failure();
+    cb.fail();
 
     t.true(cb.isOpen(), 'is open.');
 
     setTimeout(() => {    
         t.ok(cb.isHalfOpen(), 'half open now.');
-        cb.success();
+        cb.succeed();
         t.ok(!cb.isOpen(), 'is not open again.');
         t.ok(!cb.isHalfOpen(), 'is not half open again.');
     }, 15);
@@ -138,7 +140,7 @@ Test('test returns error when open', (t) => {
 
     const cb = new StateMachine({ maxFailures: 1 });
 
-    cb.failure();
+    cb.fail();
 
     t.ok(cb.isOpen(), 'is open.');
 
@@ -149,7 +151,7 @@ Test('test returns error when open', (t) => {
     }
 
     t.equal(error.message, 'Circuit breaker is open');
-    t.equal(error.name, 'CircuitBreakerOpenException');
+    t.equal(error.name, 'CircuitBreakerOpenError');
     t.equal(error.code, 'EPERM');
 });
 
@@ -165,7 +167,7 @@ Test('test does not return error when closed', (t) => {
 
 Test('reset increment to 0 when Number.MAX_SAFE_INTEGER exceeded', (t) => {
     t.plan(1);
-    
+
     const cb = new StateMachine();
 
     const stats = cb.stats;

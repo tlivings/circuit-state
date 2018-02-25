@@ -2,39 +2,40 @@
 
 const StateMachine = require('../../index');
 
-const circuitBreaker = function (func) {
-    const cb = new StateMachine();
+class Circuit {
+    constructor(func) {
+        this._func = func;
+        this._cb = new StateMachine();
+    }
+    run(...args) {
+        const callback = args[args.length - 1];
 
-    return {
-        run: function (...args) {
-            const callback = args[args.length - 1];
-            const error = cb.test();
+        const error = this._cb.test();
 
+        if (error) {
+            callback(error);
+            return;
+        }
+
+        args[args.length - 1] = (error, ...result) => {
             if (error) {
+                this._cb.fail();
                 callback(error);
                 return;
             }
+            this._cb.succeed();
+            callback(null, ...result);
+        };
 
-            args[args.length - 1] = function (error, ...result) {
-                if (error) {
-                    cb.failure();
-                    callback(error);
-                    return;
-                }
-                cb.success();
-                callback(null, ...result);
-            };
-
-            return func(...args);
-        }
+        return this._func.call(null, ...args);
     }
-};
+}
 
-const breaker = circuitBreaker(function (callback) {
+const circuit = new Circuit(function (callback) {
     callback(null, 'hello world');
 });
 
-breaker.run((error, result) => {
+circuit.run((error, result) => {
     if (error) {
         console.log(error);
         return;

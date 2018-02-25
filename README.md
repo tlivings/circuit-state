@@ -3,21 +3,69 @@
 
 A flexible circuit breaker state machine.
 
-### Usage
+The intent of this module is to provide a means of tracking a circuit breaker without forming opinions about how something is called. Use this API to blend circuit breaking into anything.
+
+### API
+
+- `StateMachine(options)` - Constructor. Options:
+    - `maxFailures` - Maximum number of failures before circuit breaker flips open. Default `3`.
+    - `resetTimeout` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`.
+
+`StateMachine` instance:
+
+- `succeed()` - Record a success.
+- `fail()` - Record a failure. This may trip open the circuit breaker.
+- `test()` - Tests for the state being open. If so, returns an error (may be returned to user).
+- `isOpen()` - Returns `true` if this circuit breaker is open.
+- `isClosed()` - Returns `true` if this circuit breaker is closed.
+- `isHalfOpen()` - Returns `true` if this circuit breaker is half-open.
+- `stats` - The stats tracker object.
+- `maxFailures` - Read-only.
+- `resetTimeout` - Read-only.
+
+Stats object:
+
+- `increment(name)` - Increment the given `name` count.
+- `reset(name)` - Reset the given `name` count.
+- `resetAll()` - Reset all counts.
+- `snapshot()` - Take a snapshot of the stats object.
+
+
+### Example Usage
 
 ```javascript
 const StateMachine = require('circuit-state');
 
-const cb = new StateMachine(/* options */);
+class Circuit {
+    constructor(func) {
+        this._func = func;
+        this._cb = new StateMachine();
+    }
+    run(...args) {
+        const callback = args[args.length - 1];
 
-cb.failure(); // Record a failure
-cb.success(); // Record a success
-cb.test(); // Returns an error if circuit is open.
-cb.stats; // Stats on the circuit breaker.
-cb.stats.snapshot(); // Take a snapshot of the current stats.
+        const error = this._cb.test();
+
+        // Fail fast
+        if (error) {
+            callback(error);
+            return;
+        }
+
+        // Wrap original callback
+        args[args.length - 1] = (error, ...result) => {
+            if (error) {
+                // Record a failure
+                this._cb.fail();
+                callback(error);
+                return;
+            }
+            // Record a success
+            this._cb.succeed();
+            callback(null, ...result);
+        };
+
+        return this._func.call(null, ...args);
+    }
+}
 ```
-
-### Options
-
-- `maxFailures` - How many failures to accept before circuit opens.
-- `resetTimeout` - How long to wait before returning the circuit to half-open.
