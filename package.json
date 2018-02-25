@@ -10,7 +10,6 @@
   "author": "Trevor Livingston",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.18.1",
     "nyc": "^11.4.1",
     "tape": "^4.9.0"
   }

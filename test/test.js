@@ -162,3 +162,17 @@ Test('test does not return error when closed', (t) => {
 
     t.error(error, 'should not be an error.');
 });
+
+Test('reset increment to 0 when Number.MAX_SAFE_INTEGER exceeded', (t) => {
+    t.plan(1);
+    
+    const cb = new StateMachine();
+
+    const stats = cb.stats;
+
+    stats._counts.executions = Number.MAX_SAFE_INTEGER;
+
+    stats.increment('executions');
+
+    t.equal(stats._counts.executions, 1, 'reset to 0 and then incremented.');
+});

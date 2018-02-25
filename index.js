@@ -38,6 +38,9 @@ class Stats {
     }
 
     increment(key) {
+        if (this._counts[key] === Number.MAX_SAFE_INTEGER) {
+            this._counts[key] = 0;
+        }
         this._counts[key] += 1;
     }
 
