@@ -5,6 +5,8 @@ A flexible circuit breaker state machine.
 
 The intent of this module is to provide a means of tracking a circuit breaker without forming opinions about how something is called. Use this API to blend circuit breaking into anything.
 
+The reasoning behind this module is that too many libraries mix in the concept of timeouts, fallbacks, and promises vs callbacks into the circuit breaker pattern. These are implementation details that ultimately will vary from use case to use case, whereas the state machine itself will not.
+
 ### API
 
 - `CircuitBreakerState(options)` - Constructor. Options:
@@ -17,9 +19,9 @@ Instance functions:
 - `succeed()` - Record a success.
 - `fail()` - Record a failure. This may trip open the circuit breaker.
 - `test()` - Tests for the state being open. If so, returns an error (may be returned to user).
-- `isOpen()` - Returns `true` if this circuit breaker is open.
-- `isClosed()` - Returns `true` if this circuit breaker is closed.
-- `isHalfOpen()` - Returns `true` if this circuit breaker is half-open.
+- `open` - Is `true` if this circuit breaker is open. Read-only.
+- `closed` - Is `true` if this circuit breaker is closed. Read-only.
+- `halfOpen` - Is `true` if this circuit breaker is half-open. Read-only.
 - `stats` - The stats tracker object.
 - `maxFailures` - Read-only.
 - `resetTimeout` - Read-only.

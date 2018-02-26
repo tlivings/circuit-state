@@ -8,9 +8,9 @@ Test('initial state', (t) => {
 
     const cb = new CircuitBreakerState();
 
-    t.ok(cb.isClosed(), 'starts closed.');
-    t.ok(!cb.isOpen(), 'not open.');
-    t.ok(!cb.isHalfOpen(), 'not half open.');
+    t.ok(cb.closed, 'starts closed.');
+    t.ok(!cb.open, 'not open.');
+    t.ok(!cb.halfOpen, 'not half open.');
     t.equal(cb._failures,0, 'no failures.');
     t.ok(cb._stats, 'stats exists.');
     t.equal(cb.maxFailures,3, 'maxFailures 3.');
@@ -28,9 +28,9 @@ Test('initial state with factory', (t) => {
 
     const cb = CircuitBreakerState.create();
 
-    t.ok(cb.isClosed(), 'starts closed.');
-    t.ok(!cb.isOpen(), 'not open.');
-    t.ok(!cb.isHalfOpen(), 'not half open.');
+    t.ok(cb.closed, 'starts closed.');
+    t.ok(!cb.open, 'not open.');
+    t.ok(!cb.halfOpen, 'not half open.');
     t.equal(cb._failures,0, 'no failures.');
     t.ok(cb._stats, 'stats exists.');
     t.equal(cb.maxFailures,3, 'maxFailures 3.');
@@ -114,7 +114,7 @@ Test('flip open', (t) => {
 
     cb.fail();
 
-    t.ok(cb.isOpen(), 'is open.');
+    t.ok(cb.open, 'is open.');
     t.equal(cb._failures, 0, 'current failures count reset.');
 });
 
@@ -125,10 +125,10 @@ Test('half open', (t) => {
 
     cb.fail();
 
-    t.ok(cb.isOpen(), 'is open.');
+    t.ok(cb.open, 'is open.');
 
     setTimeout(() => {    
-        t.ok(cb.isHalfOpen(), 'half open now.');
+        t.ok(cb.halfOpen, 'half open now.');
     }, 15);
 });
 
@@ -139,12 +139,12 @@ Test('half open to open', (t) => {
     cb.fail();
     cb.fail();
 
-    t.ok(cb.isOpen(), 'is open.');
+    t.ok(cb.open, 'is open.');
 
     setTimeout(() => {    
-        t.ok(cb.isHalfOpen(), 'half open now.');
+        t.ok(cb.halfOpen, 'half open now.');
         cb.fail();
-        t.ok(cb.isOpen(), 'is open again.');
+        t.ok(cb.open, 'is open again.');
     }, 15);
 });
 
@@ -154,13 +154,13 @@ Test('half open to closed', (t) => {
 
     cb.fail();
 
-    t.true(cb.isOpen(), 'is open.');
+    t.true(cb.open, 'is open.');
 
     setTimeout(() => {    
-        t.ok(cb.isHalfOpen(), 'half open now.');
+        t.ok(cb.halfOpen, 'half open now.');
         cb.succeed();
-        t.ok(!cb.isOpen(), 'is not open again.');
-        t.ok(!cb.isHalfOpen(), 'is not half open again.');
+        t.ok(!cb.open, 'is not open again.');
+        t.ok(!cb.halfOpen, 'is not half open again.');
     }, 15);
 });
 
@@ -171,7 +171,7 @@ Test('test returns error when open', (t) => {
 
     cb.fail();
 
-    t.ok(cb.isOpen(), 'is open.');
+    t.ok(cb.open, 'is open.');
 
     const error = cb.test();
 
@@ -206,4 +206,16 @@ Test('reset increment to 0 when Number.MAX_SAFE_INTEGER exceeded', (t) => {
     stats.increment('executions');
 
     t.equal(stats._counts.executions, 1, 'reset to 0 and then incremented.');
+});
+
+Test('incremenet some other value', (t) => {
+    t.plan(1);
+
+    const cb = new CircuitBreakerState();
+
+    const stats = cb.stats;
+
+    stats.increment('timeouts');
+
+    t.equal(stats._counts.timeouts, 1, 'unknown name set to 0 and incremented.');
 });

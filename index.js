@@ -38,6 +38,9 @@ class Stats {
     }
 
     increment(key) {
+        if (!this._counts[key]) {
+            this._counts[key] = 0;
+        }
         if (this._counts[key] === Number.MAX_SAFE_INTEGER) {
             this._counts[key] = 0;
         }
@@ -55,7 +58,7 @@ class Stats {
     }
 
     snapshot() {
-        return Object.assign({ open : this._CircuitBreakerState.isOpen(), ...this._counts });
+        return Object.assign({ open : this._CircuitBreakerState.open, ...this._counts });
     }
 }
 
@@ -110,7 +113,7 @@ class CircuitBreakerState extends EventEmitter {
 
     fail() {
         ++this._failures;
-        if (this.isHalfOpen()) {
+        if (this.halfOpen) {
             this._open();
             return;
         }
@@ -122,26 +125,26 @@ class CircuitBreakerState extends EventEmitter {
 
     succeed() {
         this._failures = 0;
-        if (this.isHalfOpen()) {
+        if (this.halfOpen) {
             this._close();
         }
         this.emit(SUCCESS);
     }
 
-    isOpen() {
+    get open() {
         return this._state === OPEN;
     }
 
-    isHalfOpen() {
+    get halfOpen() {
         return this._state === HALF_OPEN;
     }
 
-    isClosed() {
+    get closed() {
         return this._state == CLOSED;
     }
 
     test() {
-        if (this.isOpen()) {
+        if (this.open) {
             return new CircuitBreakerOpenError();
         }
     }
