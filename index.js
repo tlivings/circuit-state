@@ -1,14 +1,8 @@
 'use strict';
 
-const { EventEmitter } = require('events');
-
 const OPEN = Symbol('open');
 const CLOSED = Symbol('closed');
 const HALF_OPEN = Symbol('half_open');
-
-const FAILURE = Symbol('fail');
-const SUCCESS = Symbol('succeed');
-
 
 class CircuitBreakerOpenError extends Error {
     constructor() {
@@ -26,15 +20,6 @@ class Stats {
             successes: 0,
             failures: 0
         };
-
-        CircuitBreakerState.on(SUCCESS, () => {
-            this.increment('executions');
-            this.increment('successes');
-        });
-        CircuitBreakerState.on(FAILURE, () => {
-            this.increment('executions');
-            this.increment('failures');
-        });
     }
 
     increment(key) {
@@ -62,9 +47,8 @@ class Stats {
     }
 }
 
-class CircuitBreakerState extends EventEmitter {
+class CircuitBreakerState {
     constructor({ maxFailures = 3, resetTimeout = 10000 } = {}) {
-        super();
         this._state = CLOSED;
         this._maxFailures = maxFailures;
         this._failures = 0;
@@ -97,18 +81,15 @@ class CircuitBreakerState extends EventEmitter {
         }, this._resetTimeout);
         this._resetTimer.unref();
         this._failures = 0;
-        this.emit(OPEN);
     }
 
     _halfOpen() {
         this._state = HALF_OPEN;
-        this.emit(HALF_OPEN);
     }
 
     _close() {
         clearTimeout(this._resetTimer);
         this._state = CLOSED;
-        this.emit(CLOSED);
     }
 
     fail() {
@@ -120,7 +101,8 @@ class CircuitBreakerState extends EventEmitter {
         if (this._failures === this._maxFailures) {
             this._open();
         }
-        this.emit(FAILURE);
+        this._stats.increment('executions');
+        this._stats.increment('failures');
     }
 
     succeed() {
@@ -128,7 +110,8 @@ class CircuitBreakerState extends EventEmitter {
         if (this.halfOpen) {
             this._close();
         }
-        this.emit(SUCCESS);
+        this._stats.increment('executions');
+        this._stats.increment('successes');
     }
 
     get open() {
