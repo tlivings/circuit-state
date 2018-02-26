@@ -1,11 +1,11 @@
 'use strict';
 
-const CircuitBreakerState = require('../../index');
+const CircuitBreakerState = require('../index');
 
 class Circuit {
-    constructor(func) {
+    constructor(func, options) {
         this._func = func;
-        this._cb = new CircuitBreakerState();
+        this._cb = new CircuitBreakerState(options);
     }
     run(...args) {
         const callback = args[args.length - 1];

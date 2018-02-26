@@ -1,11 +1,11 @@
 'use strict';
 
-const CircuitBreakerState = require('../../index');
+const CircuitBreakerState = require('../index');
 
 class Circuit {
-    constructor(promise) {
+    constructor(promise, options) {
         this._promise = promise;
-        this._cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 100 });
+        this._cb = new CircuitBreakerState(options);
     }
     async run(...args) {
         const error = this._cb.test();
@@ -34,7 +34,7 @@ const circuit = new Circuit(async function () {
         throw new Error('failed.');
     }
     return 'hello world';
-});
+}, { maxFailures: 1, resetTimeout: 100 });
 
 const timer = function (t) {
     return new Promise((resolve, reject) => {
