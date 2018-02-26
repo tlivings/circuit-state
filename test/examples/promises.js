@@ -2,33 +2,33 @@
 
 const StateMachine = require('../../index');
 
-const circuitBreaker = function (deferred) {
-    const cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
+class Circuit {
+    constructor(promise) {
+        this._promise = promise;
+        this._cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
+    }
+    async run(...args) {
+        const error = this._cb.test();
 
-    return {
-        run: async function (...args) {
-            const error = cb.test();
+        if (error) {
+            throw error;
+        }
 
-            if (error) {
-                throw error;
-            }
-
-            try {
-                const result = await deferred(...args);
-                cb.succeed();
-                return result;
-            }
-            catch (error) {
-                cb.fail();
-                throw error;
-            }
+        try {
+            const result = await this._promise(...args);
+            this._cb.succeed();
+            return result;
+        }
+        catch (error) {
+            this._cb.fail();
+            throw error;
         }
     }
-};
+}
 
 let failCounter = 0;
 
-const breaker = circuitBreaker(async function () {
+const circuit = new Circuit(async function () {
     if (failCounter < 1) {
         ++failCounter;
         throw new Error('failed.');
@@ -48,7 +48,7 @@ const run = async function () {
             if (i === 3) {
                 await timer(150);
             }
-            console.log(await breaker.run());
+            console.log(await circuit.run());
         }
         catch (error) {
             console.log(error.message);
