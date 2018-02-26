@@ -13,8 +13,8 @@ class CircuitBreakerOpenError extends Error {
 }
 
 class Stats {
-    constructor(CircuitBreakerState) {
-        this._CircuitBreakerState = CircuitBreakerState;
+    constructor(cbState) {
+        this._cbState = cbState;
         this._counts = {
             executions: 0,
             successes: 0,
@@ -43,7 +43,7 @@ class Stats {
     }
 
     snapshot() {
-        return Object.assign({ open : this._CircuitBreakerState.open, ...this._counts });
+        return Object.assign({ open : this._cbState.open, ...this._counts });
     }
 }
 
