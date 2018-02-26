@@ -1,11 +1,11 @@
 'use strict';
 
-const StateMachine = require('../../index');
+const CircuitBreakerState = require('../../index');
 
 class Circuit {
     constructor(promise) {
         this._promise = promise;
-        this._cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
+        this._cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 100 });
     }
     async run(...args) {
         const error = this._cb.test();

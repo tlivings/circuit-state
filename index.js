@@ -19,19 +19,19 @@ class CircuitBreakerOpenError extends Error {
 }
 
 class Stats {
-    constructor(stateMachine) {
-        this._stateMachine = stateMachine;
+    constructor(CircuitBreakerState) {
+        this._CircuitBreakerState = CircuitBreakerState;
         this._counts = {
             executions: 0,
             successes: 0,
             failures: 0
         };
 
-        stateMachine.on(SUCCESS, () => {
+        CircuitBreakerState.on(SUCCESS, () => {
             this.increment('executions');
             this.increment('successes');
         });
-        stateMachine.on(FAILURE, () => {
+        CircuitBreakerState.on(FAILURE, () => {
             this.increment('executions');
             this.increment('failures');
         });
@@ -55,11 +55,11 @@ class Stats {
     }
 
     snapshot() {
-        return Object.assign({ open : this._stateMachine.isOpen(), ...this._counts });
+        return Object.assign({ open : this._CircuitBreakerState.isOpen(), ...this._counts });
     }
 }
 
-class StateMachine extends EventEmitter {
+class CircuitBreakerState extends EventEmitter {
     constructor({ maxFailures = 3, resetTimeout = 10000 } = {}) {
         super();
         this._state = CLOSED;
@@ -68,6 +68,10 @@ class StateMachine extends EventEmitter {
         this._resetTimer = undefined;
         this._resetTimeout = resetTimeout;
         this._stats = new Stats(this);
+    }
+
+    static create(options) {
+        return new CircuitBreakerState(options);
     }
 
     get maxFailures() {
@@ -143,4 +147,4 @@ class StateMachine extends EventEmitter {
     }
 }
 
-module.exports = StateMachine;
+module.exports = CircuitBreakerState;

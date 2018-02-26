@@ -7,11 +7,11 @@ The intent of this module is to provide a means of tracking a circuit breaker wi
 
 ### API
 
-- `StateMachine(options)` - Constructor. Options:
+- `CircuitBreakerState(options)` - Constructor. Options:
     - `maxFailures` - Maximum number of failures before circuit breaker flips open. Default `3`.
     - `resetTimeout` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`.
 
-`StateMachine` instance:
+`CircuitBreakerState` instance:
 
 - `succeed()` - Record a success.
 - `fail()` - Record a failure. This may trip open the circuit breaker.
@@ -36,12 +36,12 @@ Stats object:
 Wrapping a callback based function.
 
 ```javascript
-const StateMachine = require('circuit-state');
+const CircuitBreakerState = require('circuit-state');
 
 class Circuit {
     constructor(func) {
         this._func = func;
-        this._cb = new StateMachine();
+        this._cb = new CircuitBreakerState();
     }
     run(...args) {
         const callback = args[args.length - 1];
@@ -78,7 +78,7 @@ Here's an example with wrapping promises.
 class Circuit {
     constructor(promise) {
         this._promise = promise;
-        this._cb = new StateMachine();
+        this._cb = new CircuitBreakerState();
     }
     async run(...args) {
         const error = this._cb.test();
