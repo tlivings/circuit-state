@@ -78,7 +78,7 @@ Here's an example with wrapping promises.
 class Circuit {
     constructor(promise) {
         this._promise = promise;
-        this._cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
+        this._cb = new StateMachine();
     }
     async run(...args) {
         const error = this._cb.test();
