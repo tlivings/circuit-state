@@ -33,6 +33,8 @@ Stats object:
 
 ### Example Usage
 
+Wrapping a callback based function.
+
 ```javascript
 const StateMachine = require('circuit-state');
 
@@ -66,6 +68,34 @@ class Circuit {
         };
 
         return this._func.call(null, ...args);
+    }
+}
+```
+
+Here's an example with wrapping promises.
+
+```javascript
+class Circuit {
+    constructor(promise) {
+        this._promise = promise;
+        this._cb = new StateMachine({ maxFailures: 1, resetTimeout: 100 });
+    }
+    async run(...args) {
+        const error = this._cb.test();
+
+        if (error) {
+            throw error;
+        }
+
+        try {
+            const result = await this._promise(...args);
+            this._cb.succeed();
+            return result;
+        }
+        catch (error) {
+            this._cb.fail();
+            throw error;
+        }
     }
 }
 ```
