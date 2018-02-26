@@ -10,8 +10,9 @@ The intent of this module is to provide a means of tracking a circuit breaker wi
 - `CircuitBreakerState(options)` - Constructor. Options:
     - `maxFailures` - Maximum number of failures before circuit breaker flips open. Default `3`.
     - `resetTimeout` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`.
+- `CircuitBreakerState.create(options)` - Creates a new `CircuitBreakerState` instance.
 
-`CircuitBreakerState` instance:
+Instance functions:
 
 - `succeed()` - Record a success.
 - `fail()` - Record a failure. This may trip open the circuit breaker.
