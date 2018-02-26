@@ -1,8 +1,8 @@
 'use strict';
 
-const OPEN = Symbol('open');
-const CLOSED = Symbol('closed');
-const HALF_OPEN = Symbol('half_open');
+const OPEN = Symbol('open'); //eslint-disable-line no-undef
+const CLOSED = Symbol('closed'); //eslint-disable-line no-undef
+const HALF_OPEN = Symbol('half_open'); //eslint-disable-line no-undef
 
 class CircuitBreakerOpenError extends Error {
     constructor() {

@@ -2,18 +2,17 @@
   "name": "circuit-state",
   "version": "1.0.0",
   "description": "Circuit breaker state machine.",
+  "author": "Trevor Livingston",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js",
-    "cover": "nyc npm test"
+    "cover": "nyc npm test",
+    "lint": "eslint index.js"
   },
-  "author": "Trevor Livingston",
-  "license": "MIT",
   "devDependencies": {
+    "eslint": "^4.18.1",
     "nyc": "^11.4.1",
     "tape": "^4.9.0"
-  },
-  "dependencies": {
-    "rxjs": "^5.5.6"
   }
 }
