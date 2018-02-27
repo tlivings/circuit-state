@@ -51,12 +51,12 @@ class Stats {
 }
 
 class CircuitBreakerState {
-    constructor({ maxFailures = 3, resetTimeout = 10000, resetManually = false } = {}) {
+    constructor({ maxFailures = 3, resetTime = 10000, resetManually = false } = {}) {
         this._state = CLOSED;
         this._maxFailures = maxFailures;
         this._failures = 0;
         this._resetTimer = undefined;
-        this._resetTimeout = resetTimeout;
+        this._resetTime = resetTime;
         this._resetManually = resetManually;
         this._stats = new Stats(this);
     }
@@ -69,8 +69,8 @@ class CircuitBreakerState {
         return this._maxFailures;
     }
 
-    get resetTimeout() {
-        return this._resetTimeout;
+    get resetTime() {
+        return this._resetTime;
     }
 
     get stats() {
@@ -83,7 +83,7 @@ class CircuitBreakerState {
         if (!this._resetManually) {
             this._resetTimer = setTimeout(() => {
                 this._halfOpen();
-            }, this._resetTimeout);
+            }, this._resetTime);
             this._resetTimer.unref();
         }
         this._failures = 0;

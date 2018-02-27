@@ -34,7 +34,7 @@ const circuit = new Circuit(async function () {
         throw new Error('failed.');
     }
     return 'hello world';
-}, { maxFailures: 1, resetTimeout: 100 });
+}, { maxFailures: 1, resetTime: 100 });
 
 const timer = function (t) {
     return new Promise((resolve, reject) => {

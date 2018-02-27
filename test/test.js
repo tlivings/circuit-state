@@ -14,7 +14,7 @@ Test('initial state', (t) => {
     t.equal(cb._failures,0, 'no failures.');
     t.ok(cb._stats, 'stats exists.');
     t.equal(cb.maxFailures,3, 'maxFailures 3.');
-    t.equal(cb.resetTimeout,10000, 'resetTimeout 10000.');
+    t.equal(cb.resetTime,10000, 'resetTime 10000.');
 
     const stats = cb.stats.snapshot();
 
@@ -34,7 +34,7 @@ Test('initial state with factory', (t) => {
     t.equal(cb._failures,0, 'no failures.');
     t.ok(cb._stats, 'stats exists.');
     t.equal(cb.maxFailures,3, 'maxFailures 3.');
-    t.equal(cb.resetTimeout,10000, 'resetTimeout 10000.');
+    t.equal(cb.resetTime,10000, 'resetTime 10000.');
 
     const stats = cb.stats.snapshot();
 
@@ -62,19 +62,19 @@ Test('stats', (t) => {
 Test('configure', (t) => {
     t.plan(2);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10 });
 
     t.equal(cb.maxFailures, 1, 'maxFailures set.');
-    t.equal(cb.resetTimeout, 10, 'resetTimeout set.');
+    t.equal(cb.resetTime, 10, 'resetTime set.');
 });
 
 Test('configure with factory', (t) => {
     t.plan(2);
 
-    const cb = CircuitBreakerState.create({ maxFailures: 1, resetTimeout: 10 });
+    const cb = CircuitBreakerState.create({ maxFailures: 1, resetTime: 10 });
 
     t.equal(cb.maxFailures, 1, 'maxFailures set.');
-    t.equal(cb.resetTimeout, 10, 'resetTimeout set.');
+    t.equal(cb.resetTime, 10, 'resetTime set.');
 });
 
 Test('failure', (t) => {
@@ -121,7 +121,7 @@ Test('flip open', (t) => {
 Test('half open', (t) => {
     t.plan(2);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10 });
 
     cb.fail();
 
@@ -134,7 +134,7 @@ Test('half open', (t) => {
 
 Test('half open to open', (t) => {
     t.plan(3);
-    const cb = new CircuitBreakerState({ maxFailures: 2, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 2, resetTime: 10 });
 
     cb.fail();
     cb.fail();
@@ -150,7 +150,7 @@ Test('half open to open', (t) => {
 
 Test('half open to closed', (t) => {
     t.plan(4);
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10 });
 
     cb.fail();
 
@@ -167,7 +167,7 @@ Test('half open to closed', (t) => {
 Test('half open manual reset enabled', (t) => {
     t.plan(3);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10, resetManually: true });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10, resetManually: true });
 
     cb.fail();
 
@@ -184,7 +184,7 @@ Test('half open manual reset enabled', (t) => {
 Test('half open manual reset not enabled try anyway', (t) => {
     t.plan(2);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10 });
 
     cb.fail();
 
@@ -202,7 +202,7 @@ Test('half open manual reset not enabled try anyway', (t) => {
 Test('when open increment failures', (t) => {
     t.plan(3);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10 });
 
     cb.fail();
 
