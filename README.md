@@ -19,6 +19,7 @@ The reasoning behind this module is that too many libraries mix in the concept o
 - `CircuitBreakerState(options)` - Constructor. Options:
     - `maxFailures` - Maximum number of failures before circuit breaker flips open. Default `3`.
     - `resetTimeout` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`.
+    - `resetManually` - Boolean value representing whether or not to attempt reset manually vs on timer. Default `false`.
 - `CircuitBreakerState.create(options)` - Creates a new `CircuitBreakerState` instance.
 
 Instance functions:
@@ -26,6 +27,7 @@ Instance functions:
 - `succeed()` - Record a success.
 - `fail()` - Record a failure. This may trip open the circuit breaker.
 - `test()` - Tests for the state being open. If so, returns an error (may be returned to user).
+- `tryReset()` - Flips to half-open and cancels reset timer (if any).
 - `open` - Is `true` if this circuit breaker is open. Read-only.
 - `closed` - Is `true` if this circuit breaker is closed. Read-only.
 - `halfOpen` - Is `true` if this circuit breaker is half-open. Read-only.
