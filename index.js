@@ -23,6 +23,9 @@ class Stats {
     }
 
     increment(key) {
+        if (key === 'open') {
+            return;
+        }
         if (!this._counts[key]) {
             this._counts[key] = 0;
         }

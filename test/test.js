@@ -269,3 +269,15 @@ Test('incremenet some other value', (t) => {
 
     t.equal(stats._counts.timeouts, 1, 'unknown name set to 0 and incremented.');
 });
+
+Test('incremenet protected name (open)', (t) => {
+    t.plan(1);
+
+    const cb = new CircuitBreakerState();
+
+    const stats = cb.stats;
+
+    stats.increment('open');
+
+    t.ok(!stats._counts.open, '\"open\" name not set.');
+});
