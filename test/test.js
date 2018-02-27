@@ -127,7 +127,7 @@ Test('half open', (t) => {
 
     t.ok(cb.open, 'is open.');
 
-    setTimeout(() => {    
+    setTimeout(() => {
         t.ok(cb.halfOpen, 'half open now.');
     }, 15);
 });
@@ -141,7 +141,7 @@ Test('half open to open', (t) => {
 
     t.ok(cb.open, 'is open.');
 
-    setTimeout(() => {    
+    setTimeout(() => {
         t.ok(cb.halfOpen, 'half open now.');
         cb.fail();
         t.ok(cb.open, 'is open again.');
@@ -156,12 +156,62 @@ Test('half open to closed', (t) => {
 
     t.true(cb.open, 'is open.');
 
-    setTimeout(() => {    
+    setTimeout(() => {
         t.ok(cb.halfOpen, 'half open now.');
         cb.succeed();
         t.ok(!cb.open, 'is not open again.');
         t.ok(!cb.halfOpen, 'is not half open again.');
     }, 15);
+});
+
+Test('half open manual reset enabled', (t) => {
+    t.plan(3);
+
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10, resetManually: true });
+
+    cb.fail();
+
+    t.ok(cb.open, 'is open.');
+
+    setTimeout(() => {
+        t.ok(cb.open, 'still open.');
+        cb.tryReset();
+        t.ok(cb.halfOpen, 'half open now.');
+    }, 15);
+});
+
+
+Test('half open manual reset not enabled try anyway', (t) => {
+    t.plan(2);
+
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+
+    cb.fail();
+
+    t.ok(cb.open, 'is open.');
+
+    cb.tryReset();
+
+    cb.succeed();
+
+    setTimeout(() => {
+        t.ok(cb.closed, 'closed.');
+    }, 15);
+});
+
+Test('when open increment failures', (t) => {
+    t.plan(3);
+
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTimeout: 10 });
+
+    cb.fail();
+
+    t.ok(cb.open, 'is open.');
+
+    cb.succeed();
+
+    t.equal(cb.stats._counts.executions, 2, '2 executions.');
+    t.equal(cb.stats._counts.failures, 2, '2 failures.');
 });
 
 Test('test returns error when open', (t) => {

@@ -48,12 +48,13 @@ class Stats {
 }
 
 class CircuitBreakerState {
-    constructor({ maxFailures = 3, resetTimeout = 10000 } = {}) {
+    constructor({ maxFailures = 3, resetTimeout = 10000, resetManually = false } = {}) {
         this._state = CLOSED;
         this._maxFailures = maxFailures;
         this._failures = 0;
         this._resetTimer = undefined;
         this._resetTimeout = resetTimeout;
+        this._resetManually = resetManually;
         this._stats = new Stats(this);
     }
 
@@ -76,10 +77,12 @@ class CircuitBreakerState {
     _open() {
         clearTimeout(this._resetTimer);
         this._state = OPEN;
-        this._resetTimer = setTimeout(() => {
-            this._halfOpen();
-        }, this._resetTimeout);
-        this._resetTimer.unref();
+        if (!this._resetManually) {
+            this._resetTimer = setTimeout(() => {
+                this._halfOpen();
+            }, this._resetTimeout);
+            this._resetTimer.unref();
+        }
         this._failures = 0;
     }
 
@@ -111,7 +114,17 @@ class CircuitBreakerState {
             this._close();
         }
         this._stats.increment('executions');
-        this._stats.increment('successes');
+        if (this.closed) {
+            this._stats.increment('successes');
+        }
+        else {
+            this._stats.increment('failures');
+        }
+    }
+
+    tryReset() {
+        clearTimeout(this._resetTimer);
+        this._halfOpen();
     }
 
     get open() {
