@@ -229,9 +229,9 @@ Test('test returns error when open', (t) => {
         t.fail('did not get error.');
     }
 
-    t.equal(error.message, 'Circuit breaker is open');
-    t.equal(error.name, 'CircuitBreakerOpenError');
-    t.equal(error.code, 'EPERM');
+    t.equal(error.message, 'Circuit breaker is open', 'error.message is correct.');
+    t.equal(error.name, 'CircuitBreakerOpenError', 'error.name is correct.');
+    t.equal(error.code, 'EPERM', 'error.code is correct.');
 });
 
 Test('test does not return error when closed', (t) => {
