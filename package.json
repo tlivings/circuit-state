@@ -5,6 +5,13 @@
   "author": "Trevor Livingston",
   "license": "MIT",
   "main": "index.js",
+  "keywords": [
+    "circuitbreaker",
+    "hysterix",
+    "resiliency",
+    "circuit",
+    "breaker"
+  ],
   "scripts": {
     "test": "tape test/*.js",
     "cover": "nyc npm test",
