@@ -7,6 +7,13 @@ The intent of this module is to provide a means of tracking a circuit breaker wi
 
 The reasoning behind this module is that too many libraries mix in the concept of timeouts, fallbacks, and promises vs callbacks into the circuit breaker pattern. These are implementation details that ultimately will vary from use case to use case, whereas the state machine itself will not.
 
+### What is a circuit breaker?
+
+> A circuit breaker is used to provide stability and prevent cascading failures in distributed systems. These should be used in conjunction with judicious timeouts at the interfaces between remote systems to prevent the failure of a single component from bringing down all components.
+-- [Akka Documentation on Circuit Breaker](https://doc.akka.io/docs/akka/2.5/common/circuitbreaker.html)
+
+![Circuit Breaker State Machine](https://doc.akka.io/docs/akka/2.5/images/circuit-breaker-states.png)
+
 ### API
 
 - `CircuitBreakerState(options)` - Constructor. Options:
@@ -34,7 +41,7 @@ Stats object:
 - `snapshot()` - Take a snapshot of the stats object.
 
 
-### Example Usage
+### Example usage
 
 Wrapping a callback based function.
 
