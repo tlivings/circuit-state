@@ -64,7 +64,7 @@ const circuit = new Circuit(function (callback) {
 
 circuit.run((error, result) => {
     if (error) {
-        console.log(error);
+        console.log(error.stack);
         return;
     }
     console.log(result);
