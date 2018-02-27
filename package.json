@@ -12,6 +12,9 @@
     "circuit",
     "breaker"
   ],
+  "engines": {
+    "node": ">=8"
+  },
   "scripts": {
     "test": "tape test/*.js",
     "cover": "nyc npm test",
