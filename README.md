@@ -26,7 +26,7 @@ Instance functions:
 
 - `succeed()` - Record a success.
 - `fail()` - Record a failure. This may trip open the circuit breaker.
-- `test()` - Tests for the state being open. If so, returns an error (may be returned to user).
+- `test()` - Utility function to test for the state being open. If so, returns an error (may be returned to user).
 - `tryReset()` - Flips to half-open and cancels reset timer (if any).
 - `open` - Is `true` if this circuit breaker is open. Read-only.
 - `closed` - Is `true` if this circuit breaker is closed. Read-only.
@@ -88,8 +88,8 @@ Here's an example with wrapping promises.
 
 ```javascript
 class Circuit {
-    constructor(promise) {
-        this._promise = promise;
+    constructor(asyncFunc) {
+        this._asyncFunc = asyncFunc;
         this._cb = new CircuitBreakerState();
     }
     async run(...args) {
@@ -100,7 +100,7 @@ class Circuit {
         }
 
         try {
-            const result = await this._promise(...args);
+            const result = await this._asyncFunc(...args);
             this._cb.succeed();
             return result;
         }
