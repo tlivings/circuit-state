@@ -167,7 +167,23 @@ Test('half open to closed', (t) => {
 Test('half open manual reset enabled', (t) => {
     t.plan(3);
 
-    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 10, resetManually: true });
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: 0 });
+
+    cb.fail();
+
+    t.ok(cb.open, 'is open.');
+
+    setTimeout(() => {
+        t.ok(cb.open, 'still open.');
+        cb.tryReset();
+        t.ok(cb.halfOpen, 'half open now.');
+    }, 15);
+});
+
+Test('half open manual reset enabled < 0', (t) => {
+    t.plan(3);
+
+    const cb = new CircuitBreakerState({ maxFailures: 1, resetTime: -1 });
 
     cb.fail();
 

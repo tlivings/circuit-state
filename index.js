@@ -1,4 +1,3 @@
-'use strict';
 
 const OPEN = Symbol('open');
 const CLOSED = Symbol('closed');
@@ -51,13 +50,13 @@ class Stats {
 }
 
 class CircuitBreakerState {
-    constructor({ maxFailures = 3, resetTime = 10000, resetManually = false } = {}) {
+    constructor({ maxFailures = 3, resetTime = 10000 } = {}) {
         this._state = CLOSED;
         this._maxFailures = maxFailures;
         this._failures = 0;
         this._resetTimer = undefined;
         this._resetTime = resetTime;
-        this._resetManually = resetManually;
+        this._resetManually = resetTime <= 0 ? true : false;
         this._stats = new Stats(this);
     }
 

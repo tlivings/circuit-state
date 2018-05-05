@@ -18,8 +18,7 @@ The reasoning behind this module is that too many libraries mix in the concept o
 
 - `CircuitBreakerState(options)` - Constructor. Options:
     - `maxFailures` - Maximum number of failures before circuit breaker flips open. Default `3`.
-    - `resetTime` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`.
-    - `resetManually` - Boolean value representing whether or not to attempt reset manually vs on timer. Default `false`.
+    - `resetTime` - Time in ms before an open circuit breaker returns to a half-open state. Default `10000`. If 0 or less, manual resets will be used.
 - `CircuitBreakerState.create(options)` - Creates a new `CircuitBreakerState` instance.
 
 Instance functions:
@@ -62,7 +61,9 @@ class Circuit {
 
         // Fail fast
         if (error) {
-            callback(error);
+            setImmediate(() => {
+                callback(error);
+            });
             return;
         }
 
@@ -95,6 +96,7 @@ class Circuit {
     async run(...args) {
         const error = this._cb.test();
 
+        // Fail fast
         if (error) {
             throw error;
         }
