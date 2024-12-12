@@ -33,6 +33,7 @@ Instance functions:
 - `stats` - The stats tracker object.
 - `maxFailures` - Read-only.
 - `resetTime` - Read-only.
+- `events` - read only event emitter
 
 Stats object:
 
@@ -41,6 +42,17 @@ Stats object:
 - `resetAll()` - Reset all counts.
 - `snapshot()` - Take a snapshot of the stats object.
 
+Event emitter:
+
+The `events` property on the `CircuitBreakerState` is an event emitter to which you can listen to the following events:
+
+- `opened` 
+- `closed`
+- `half_opened`
+- `succeeded`
+- `failed`
+
+All of these events will receive a `snapshot` of the `Stats` object.
 
 ### Example usage
 

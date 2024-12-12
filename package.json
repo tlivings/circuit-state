@@ -1,6 +1,6 @@
 {
   "name": "circuit-state",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Circuit breaker state machine.",
   "author": "Trevor Livingston",
   "license": "MIT",
@@ -21,8 +21,8 @@
     "lint": "eslint index.js"
   },
   "devDependencies": {
-    "eslint": "^4.18.1",
-    "nyc": "^11.4.1",
-    "tape": "^4.9.0"
+    "eslint": "^4.19.1",
+    "nyc": "^11.9.0",
+    "tape": "^4.17.0"
   }
 }
