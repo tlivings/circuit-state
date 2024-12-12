@@ -1,6 +1,6 @@
 {
   "name": "circuit-state",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Circuit breaker state machine.",
   "author": "Trevor Livingston",
   "license": "MIT",
