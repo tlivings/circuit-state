@@ -73,7 +73,7 @@ const operation = {
     }
   `,
   getContext: () => ({}), // Add the required method
-  setContext: () => {},  // Optional, no-op implementation
+  setContext: () => { },  // Optional, no-op implementation
 };
 
 link.request(operation).subscribe({
